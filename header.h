@@ -139,17 +139,75 @@ Image readPPM(const char* filename)
 }
 
 
-void savePPM(string filename, int N, const complex* arr_r, const complex* arr_g, const complex* arr_b)
+void savePPM(string filename, int N, const complex* arr_r, const complex* arr_g, const complex* arr_b, const bool flag)
 {
 	ofstream ofs(filename, ios::out | ios::binary);
 	ofs << "P6\n" << N << " " << N << "\n255\n";
-	
+
+	float max1 = -INFINITY;
+	float max2 = -INFINITY;
+	float max3 = -INFINITY;
 	for (int i = 0; i < N * N; ++i)
 	{
-		unsigned char r = (unsigned char)(255 * clamp(0, 1, arr_r[i].modul()));
-		unsigned char g = (unsigned char)(255 * clamp(0, 1, arr_g[i].modul()));
-		unsigned char b = (unsigned char)(255 * clamp(0, 1, arr_b[i].modul()));
-		ofs << r << g << b;
+		if (arr_r[i].modul() > max1) max1 = arr_r[i].modul();
+		if (arr_g[i].modul() > max2) max2 = arr_g[i].modul();
+		if (arr_b[i].modul() > max3) max3 = arr_b[i].modul();
+	}
+	float scale1 = 255 / log(1 + max1);
+	float scale2 = 255 / log(1 + max2);
+	float scale3 = 255 / log(1 + max3);
+
+	
+	if (!flag)
+	{
+		for (int i = N / 2; i < N; ++i)
+		{
+			for (int j = N / 2; j < N; ++j)
+			{
+				unsigned char r = (unsigned char)(scale1 * log(1 + arr_r[i * N + j].modul()));
+				unsigned char g = (unsigned char)(scale2 * log(1 + arr_g[i * N + j].modul()));
+				unsigned char b = (unsigned char)(scale3 * log(1 + arr_b[i * N + j].modul()));
+				ofs << r << g << b;
+			}
+
+			for (int j = 0; j < N / 2; ++j)
+			{
+				unsigned char r = (unsigned char)(scale1 * log(1 + arr_r[i * N + j].modul()));
+				unsigned char g = (unsigned char)(scale2 * log(1 + arr_g[i * N + j].modul()));
+				unsigned char b = (unsigned char)(scale3 * log(1 + arr_b[i * N + j].modul()));
+				ofs << r << g << b;
+			}
+		}
+
+		for (int i = 0; i < N / 2; ++i)
+		{
+			for (int j = N / 2; j < N; ++j)
+			{
+				unsigned char r = (unsigned char)(scale1 * log(1 + arr_r[i * N + j].modul()));
+				unsigned char g = (unsigned char)(scale2 * log(1 + arr_g[i * N + j].modul()));
+				unsigned char b = (unsigned char)(scale3 * log(1 + arr_b[i * N + j].modul()));
+				ofs << r << g << b;
+			}
+
+			for (int j = 0; j < N / 2; ++j)
+			{
+				unsigned char r = (unsigned char)(scale1 * log(1 + arr_r[i * N + j].modul()));
+				unsigned char g = (unsigned char)(scale2 * log(1 + arr_g[i * N + j].modul()));
+				unsigned char b = (unsigned char)(scale3 * log(1 + arr_b[i * N + j].modul()));
+				ofs << r << g << b;
+			}
+		}
+	}
+
+	else
+	{
+		for (int i = 0; i < N * N; ++i)
+		{
+			unsigned char r = (unsigned char)(255 * clamp(0, 1, arr_r[i].modul()));
+			unsigned char g = (unsigned char)(255 * clamp(0, 1, arr_g[i].modul()));
+			unsigned char b = (unsigned char)(255 * clamp(0, 1, arr_b[i].modul()));
+			ofs << r << g << b;
+		}
 	}
 
 	ofs.close();

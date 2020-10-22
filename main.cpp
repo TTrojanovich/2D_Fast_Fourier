@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "header.h"
 
+
 using namespace std;
 
 const int N = 512; // size of a square image, power of 2
@@ -96,7 +97,6 @@ void FFT2D(const int N, complex* in, bool inverse)
 
 int main()
 {
-	//Image imageData = readPPM("lena.ppm");
 	Image imageData = readPPM("sunrise.ppm");
 
 	cout << imageData.w << " " << imageData.h << endl;
@@ -113,22 +113,21 @@ int main()
 			in_g[i * N + j] = complex(imageData.pixels[i * N + j].g, 0);
 			in_b[i * N + j] = complex(imageData.pixels[i * N + j].b, 0);
 		}
-
+	
 	cout << "EXECUTION: Forward FFT" << endl;
 	FFT2D(N, in_r, false);
 	FFT2D(N, in_g, false);
 	FFT2D(N, in_b, false);
 
 	cout << "EXECUTION: Creation image for FFT " << endl;
-	savePPM("fourier_optical_out.ppm", N, in_r, in_g, in_b);
+	savePPM("fourier_optical_out.ppm", N, in_r, in_g, in_b, false);
 
 	cout << "EXECUTION: Inverse FFT" << endl;
 	FFT2D(N, in_r, true);
 	FFT2D(N, in_g, true);
 	FFT2D(N, in_b, true);
-
 	cout << "EXECUTION: Create image for inverse FFT" << endl;
-	savePPM("fourier_out.ppm", N, in_r, in_g, in_b);
+	savePPM("fourier_out.ppm", N, in_r, in_g, in_b, true);
 
 	delete[] in_r; delete[] in_g; delete[] in_b;
 }
